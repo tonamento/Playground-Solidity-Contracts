@@ -3,7 +3,7 @@ require('dotenv').config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  defaultNetwork: "testnet",
+  defaultNetwork: "baseGoerli",
   networks: {
     localhost: {
         url: "http://127.0.0.1:8545",
@@ -28,7 +28,13 @@ module.exports = {
         url: "https://www.noderpc.xyz/rpc-mainnet/public",
         chainId: 1,
         accounts: [process.env.ETH_ACC,]
-      }
+      },
+      baseGoerli: {
+        url: "https://powerful-methodical-uranium.base-goerli.discover.quiknode.pro/a7be3c5b9e1234c06a8d4b0b866fc8c9ca6a154f/",
+        chainId: 84531,
+        gasPrice: 20000000000,
+        accounts: [process.env.BSC_ACC,]
+    },
   },
   etherscan: {
     // Your API key for Etherscan
@@ -36,7 +42,7 @@ module.exports = {
     apiKey: process.env.BSCSCAN_API
   },
   solidity: {
-    version: "0.8.17",
+    version: "0.8.20",
     settings: {
       optimizer: {
         enabled: false
