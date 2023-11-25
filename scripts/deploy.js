@@ -2,7 +2,7 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const reportContract = await hre.ethers.deployContract("Token");
+  const reportContract = await hre.ethers.deployContract("TicketMaster");
 
   await reportContract.waitForDeployment();
 
