@@ -28,7 +28,7 @@ contract TicketMaster {
         require(usdc.balanceOf(msg.sender) >= _amount, 'Insufficient balance');
         require(usdc.allowance(msg.sender, address(this)) >= _amount, 'Insufficient allowance');
 
-        uint256 costInTokens = _amount * ticketBuyRate;
+        uint256 costInTokens = _amount / ticketBuyRate;
         require(usdc.transferFrom(msg.sender, address(this), _amount));
         
         tickets[msg.sender] = costInTokens;
@@ -37,7 +37,7 @@ contract TicketMaster {
 
     function sellingTicket(uint128 _amount) external returns (bool) {
         require(tickets[msg.sender] >= _amount , 'Insufficient ticket balance');
-        require(usdc.transfer(msg.sender, _amount));
+        require(usdc.transfer(msg.sender, _amount / ticketSellRate));
         
         tickets[msg.sender] -= _amount * ticketSellRate;
         return true;
