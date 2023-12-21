@@ -32,14 +32,14 @@ module.exports = {
       baseGoerli: {
         url: "https://powerful-methodical-uranium.base-goerli.discover.quiknode.pro/a7be3c5b9e1234c06a8d4b0b866fc8c9ca6a154f/",
         chainId: 84531,
-        gasPrice: 20000000000,
+        gasPrice: 2000000000,
         accounts: [process.env.BSC_ACC,]
     },
   },
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://bscscan.com/
-    apiKey: process.env.BSCSCAN_API
+    apiKey: process.env.ETHERSCAN_API
   },
   solidity: {
     version: "0.8.20",

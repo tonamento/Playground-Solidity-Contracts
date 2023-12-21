@@ -9,7 +9,8 @@ contract TicketMaster {
 
     uint256 public ticketBuyRate; // 1 USDC = ticketBuyRate TOTO
     uint256 public ticketSellRate; // 1 USDC = ticketSellRate TOTO
-    
+    bool public pause; 
+
     mapping(address => uint256) public tickets;
 
     event TicketPurchased(address indexed buyer, uint256 amount);
@@ -17,7 +18,12 @@ contract TicketMaster {
     event TicketUsed(address indexed user, uint256 amount);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the contract owner can call this function");
+        require(msg.sender == owner, "Only the contract owner can call this function.");
+        _;
+    }
+
+    modifier openTrade() {
+        require(!pause, "Operation is paused.");
         _;
     }
 
@@ -28,7 +34,7 @@ contract TicketMaster {
         ticketSellRate = _sellRate;
     }
 
-    function buyTicket(uint256 _usdcAmount) external returns (bool) {
+    function buyTicket(uint256 _usdcAmount) external openTrade returns (bool) {
         require(usdc.balanceOf(msg.sender) >= _usdcAmount, 'Insufficient USDC balance');
         require(usdc.allowance(msg.sender, address(this)) >= _usdcAmount, 'Insufficient allowance');
 
@@ -40,7 +46,7 @@ contract TicketMaster {
         return true;
     }
 
-    function sellTicket(uint256 _tokensAmount) external returns (bool) {
+    function sellTicket(uint256 _tokensAmount) external openTrade returns (bool) {
         require(tickets[msg.sender] >= _tokensAmount, 'Insufficient ticket balance');
 
         uint256 amountInUSDC = _tokensAmount / ticketSellRate;
@@ -51,10 +57,18 @@ contract TicketMaster {
         return true;
     }
 
-    function useTicket(uint256 _tokensAmount) external returns (bool) {
+    function useTicket(uint256 _tokensAmount) external openTrade returns (bool) {
         require(tickets[msg.sender] >= _tokensAmount, 'Insufficient ticket balance');
         tickets[msg.sender] -= _tokensAmount;
         emit TicketUsed(msg.sender, _tokensAmount);
         return true;
+    }
+
+     function pauseTrade() public onlyOwner {
+        pause = true;
+    }
+
+    function unauseTrade() public onlyOwner {
+        pause = false;
     }
 }
