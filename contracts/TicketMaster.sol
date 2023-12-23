@@ -38,7 +38,7 @@ contract TicketMaster {
         require(usdc.balanceOf(msg.sender) >= _usdcAmount, 'Insufficient USDC balance');
         require(usdc.allowance(msg.sender, address(this)) >= _usdcAmount, 'Insufficient allowance');
 
-        uint256 costInTokens = _usdcAmount * ticketBuyRate;
+        uint256 costInTokens = (_usdcAmount * 1e18) / ticketBuyRate; // 1e18 is used for precision
         require(usdc.transferFrom(msg.sender, address(this), _usdcAmount), "Transfer of USDC failed");
 
         tickets[msg.sender] += costInTokens; 
@@ -49,9 +49,9 @@ contract TicketMaster {
     function sellTicket(uint256 _tokensAmount) external openTrade returns (bool) {
         require(tickets[msg.sender] >= _tokensAmount, 'Insufficient ticket balance');
 
-        uint256 amountInUSDC = _tokensAmount / ticketSellRate;
+        uint256 amountInUSDC = (_tokensAmount * ticketSellRate) / 1e18; // 1e18 is used for precision
         require(usdc.transfer(msg.sender, amountInUSDC), "Transfer of USDC failed");
-        
+
         tickets[msg.sender] -= _tokensAmount;
         emit TicketSold(msg.sender, amountInUSDC);
         return true;
@@ -62,6 +62,12 @@ contract TicketMaster {
         tickets[msg.sender] -= _tokensAmount;
         emit TicketUsed(msg.sender, _tokensAmount);
         return true;
+    }
+
+    function withdraw(address recipient) external onlyOwner openTrade {
+        require(tickets[msg.sender] > 0, "No usdc to withdraw");
+        uint256 amountInUSDC = usdc.balanceOf(address(this)); // 1e18 is used for precision
+        require(usdc.transfer(recipient, amountInUSDC), "Transfer of USDC failed");
     }
 
      function pauseTrade() public onlyOwner {
