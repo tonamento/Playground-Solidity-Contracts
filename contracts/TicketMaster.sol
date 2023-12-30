@@ -56,7 +56,7 @@ contract TicketMaster {
     function sellTicket(uint256 _tokensAmount) external openTrade notBlacklisted returns (bool) {
         require(_tickets[msg.sender] >= _tokensAmount, 'Insufficient ticket balance');
 
-        uint256 amountInUSDC = (_tokensAmount / _ticketSellRate); // 1e18 is used for precision
+        uint256 amountInUSDC = (_tokensAmount / _ticketSellRate) * 1e18; // 1e18 is used for precision
         require(_usdc.transfer(msg.sender, amountInUSDC), "Transfer of USDC failed");
 
         _tickets[msg.sender] -= _tokensAmount;
